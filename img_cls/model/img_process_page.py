@@ -41,7 +41,7 @@ def my_init():
     ImgWorker.worker = ImageClassification()
 
 
-@img_api.route('/img_classification')
+@img_api.route('/img_classification', methods=['GET','POST'])
 def detect_object():
     if request.method == 'GET':
         return ImgWorker.kUploadPage
@@ -60,4 +60,4 @@ def detect_object():
     img_file.save(save_path)
 
     result = ImgWorker.worker.run(save_path)
-    return json.dumps(result)
+    return json.dumps(str(result))

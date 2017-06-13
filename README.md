@@ -13,7 +13,5 @@ select some cats and dogs to data/dog_vs_cat/
 ## run
 
 ```
-cd img_cls
-
-python apps.py
+python run.py
 ```

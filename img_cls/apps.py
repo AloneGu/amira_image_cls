@@ -29,7 +29,7 @@ def setcfg(name, default=''):
 setcfg('IMG_WIDTH', 224)
 setcfg('IMG_HEIGHT', 224)
 setcfg('MODEL', 'ALEXNET')
-setcfg('EPOCH', 10)
+setcfg('EPOCH', 20)
 
 from .model.img_process_page import img_api
 

@@ -12,7 +12,7 @@ import ast
 import glob
 from scipy.misc import imread, imresize
 import numpy as np
-
+from sklearn.utils import shuffle
 
 # function to get os
 def getcfg(name, default, app_=None):
@@ -55,4 +55,4 @@ def data_load(data_dir_path, img_height, img_width):
         for img_path in imgs:
             x.append(imresize(imread(img_path), (img_height, img_width)))
             y.append(tmp_y)
-    return np.array(x), y
+    return shuffle(np.array(x), y)
