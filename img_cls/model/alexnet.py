@@ -42,10 +42,14 @@ class AlexNet(object):
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Flatten())
-        model.add(Dense(4096))
+        model.add(Dense(256))
         model.add(Activation('relu'))
-        model.add(Dense(4096))
+        model.add(Dropout(0.3))
+
+        model.add(Dense(128))
         model.add(Activation('relu'))
+        model.add(Dropout(0.3))
+
         model.add(Dense(self.num_class, activation='softmax'))
 
         model.compile(loss='categorical_crossentropy',
