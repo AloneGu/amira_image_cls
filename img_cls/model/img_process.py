@@ -25,17 +25,17 @@ class ImageClassification(object):
         self.img_w = getcfg('IMG_WIDTH', 224)
         self.img_h = getcfg('IMG_HEIGHT', 224)
         self.epoch = getcfg('EPOCH', 10)
-        self.default_shape = (self.img_h, self.img_w, 3)
+        self.default_shape = (3, self.img_h, self.img_w)  # channel first
 
         self.model_name = getcfg('MODEL_NAME', 'ALEXNET')
         self.data_path = getcfg('DATA_DIR', '../data/dog_vs_cat')
         self.model_save_path = get_abspath('../models/{}_{}_model.h5'.format(self.model_name, self.epoch))
-        print('MODEL NAME',self.model_name, 'EPOCHS', self.epoch, 'DATA PATH', self.data_path)
-        print('MODEL SAVE PATH',self.model_save_path)
+        print('MODEL NAME', self.model_name, 'EPOCHS', self.epoch, 'DATA PATH', self.data_path)
+        print('MODEL SAVE PATH', self.model_save_path)
 
         # get data
         self.x, self.y = data_load(self.data_path, img_height=self.img_h, img_width=self.img_w)
-        print('x shape',self.x.shape)
+        print('x shape', self.x.shape)
         self.encoder = LabelEncoder()
         self.label_y = self.encoder.fit_transform(self.y)
         self.num_class = len(self.encoder.classes_)
@@ -46,6 +46,7 @@ class ImageClassification(object):
         print(self.num_class, self.y[:2], self.label_y[:2], self.binary_y[:2])
 
         if os.path.exists(self.model_save_path):
+            print('LOAD EXIST MODEL')
             self.model = load_model(self.model_save_path)
         else:
             self.model = None
@@ -72,22 +73,25 @@ class ImageClassification(object):
             shear_range=0.2,
             zoom_range=0.2,
             horizontal_flip=True)  # randomly flip images
-        #self.model.fit(self.x, self.binary_y, epochs=self.epoch, validation_split=0.2)
-        log_path = get_abspath('../models/{}_{}_training.log'.format(self.model_name,self.epoch))
+        # self.model.fit(self.x, self.binary_y, epochs=self.epoch, validation_split=0.2)
+        log_path = get_abspath('../models/{}_{}_training.log'.format(self.model_name, self.epoch))
         csv_logger = CSVLogger(log_path)
-        self.model.fit_generator(datagen.flow(self.x,self.binary_y),steps_per_epoch=32,epochs=self.epoch,verbose=1, callbacks=[csv_logger])
+        self.model.fit_generator(datagen.flow(self.x, self.binary_y), steps_per_epoch=32, epochs=self.epoch, verbose=1,
+                                 callbacks=[csv_logger])
         self.model.save(self.model_save_path)
 
     def run(self, img_file_path):
         img = imread(img_file_path)
         img = imresize(img, (self.img_h, self.img_w))
+        img = np.transpose(img, (2, 1, 0))
         np_img = np.array([img])
         if self.num_class == 2:
-            class_type = self.model.predict(np_img)[0]
-            prob = self.model.predict_proba(np_img)[0]
+            class_type = int(self.model.predict(np_img)[0])  # binary class 0 or 1
+            prob = round(self.model.predict_proba(np_img)[0], 2)
         else:
             res = self.model.predict_proba(np_img)[0]
             class_type = np.argmax(res)
-            prob = max(res)
-        return_res = {'type':self.encoder.inverse_transform(class_type), 'probability':prob}
+            prob = round(max(res), 2)
+        return_res = {'type': self.encoder.inverse_transform(class_type), 'probability': prob}
         return return_res
+
