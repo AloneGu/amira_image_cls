@@ -14,6 +14,7 @@ from scipy.misc import imread, imresize
 import numpy as np
 from sklearn.utils import shuffle
 
+
 # function to get os
 def getcfg(name, default, app_=None):
     try:
@@ -54,6 +55,12 @@ def data_load(data_dir_path, img_height, img_width):
         tmp_y = os.path.split(cls)[-1]
         for img_path in imgs:
             tmp_img = imresize(imread(img_path), (img_height, img_width))
-            x.append(np.transpose(tmp_img,(2,1,0)))
+            x.append(np.transpose(tmp_img, (2, 1, 0)))
             y.append(tmp_y)
     return shuffle(np.array(x), y)
+
+
+def get_y_labels(data_dir_path):
+    data_dir = get_abspath(data_dir_path)
+    y_labels = os.listdir(data_dir)
+    return y_labels

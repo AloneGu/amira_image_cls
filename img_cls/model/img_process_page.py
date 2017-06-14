@@ -14,7 +14,6 @@ import time
 import base64
 
 
-
 class ImgWorker(object):
     kUploadPage = '''<!doctype html>
        <title>Upload new File</title>
@@ -24,7 +23,8 @@ class ImgWorker(object):
            <input type=submit value=Upload>
        </form>
        '''
-    worker = None
+    from .img_process import ImageClassification
+    worker = ImageClassification()
     savedir = '/tmp/'
 
 
@@ -36,13 +36,7 @@ def hello():
     return "hello img page"
 
 
-@img_api.before_app_first_request
-def my_init():
-    from .img_process import ImageClassification
-    ImgWorker.worker = ImageClassification()
-
-
-@img_api.route('/img_classification', methods=['GET','POST'])
+@img_api.route('/img_classification', methods=['GET', 'POST'])
 def detect_object():
     if request.method == 'GET':
         return ImgWorker.kUploadPage

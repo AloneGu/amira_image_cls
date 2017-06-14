@@ -7,7 +7,7 @@
 @time: 2017-06-13 11:13
 """
 
-from ..util import getcfg, data_load, get_abspath
+from ..util import getcfg, data_load, get_abspath, get_y_labels
 from sklearn.preprocessing import LabelEncoder
 from keras.models import load_model
 from keras.callbacks import CSVLogger
@@ -33,22 +33,35 @@ class ImageClassification(object):
         print('MODEL NAME', self.model_name, 'EPOCHS', self.epoch, 'DATA PATH', self.data_path)
         print('MODEL SAVE PATH', self.model_save_path)
 
-        # get data
-        self.x, self.y = data_load(self.data_path, img_height=self.img_h, img_width=self.img_w)
-        print('x shape', self.x.shape)
+        # get y information first
         self.encoder = LabelEncoder()
-        self.label_y = self.encoder.fit_transform(self.y)
+        self.encoder.fit(get_y_labels(self.data_path))
         self.num_class = len(self.encoder.classes_)
-        if self.num_class == 2:
-            self.binary_y = self.label_y
-        else:
-            self.binary_y = to_categorical(self.label_y)
-        print(self.num_class, self.y[:2], self.label_y[:2], self.binary_y[:2])
 
         if os.path.exists(self.model_save_path):
+            # load model , do not have to load x data
             print('LOAD EXIST MODEL')
             self.model = load_model(self.model_save_path)
         else:
+            # get data
+            self.x, self.y = data_load(self.data_path, img_height=self.img_h, img_width=self.img_w)
+            print('x shape', self.x.shape)
+
+            self.label_y = self.encoder.transform(self.y)
+            if self.num_class == 2:
+                self.binary_y = self.label_y
+            else:
+                self.binary_y = to_categorical(self.label_y)
+            print(self.num_class, self.y[:2], self.label_y[:2], self.binary_y[:2])
+
+            # already shuffle ,split
+            tmp_data_cnt = len(self.x)
+            self.train_data_cnt = int(tmp_data_cnt * 0.7)
+            self.x_train = self.x[:self.train_data_cnt]
+            self.x_test = self.x[self.train_data_cnt:]
+            self.y_train = self.binary_y[:self.train_data_cnt]
+            self.y_test = self.binary_y[self.train_data_cnt:]
+
             self.model = None
             if self.model_name == 'ALEXNET':
                 from .alexnet import AlexNet
@@ -76,7 +89,10 @@ class ImageClassification(object):
         # self.model.fit(self.x, self.binary_y, epochs=self.epoch, validation_split=0.2)
         log_path = get_abspath('../models/{}_{}_training.log'.format(self.model_name, self.epoch))
         csv_logger = CSVLogger(log_path)
-        self.model.fit_generator(datagen.flow(self.x, self.binary_y), steps_per_epoch=32, epochs=self.epoch, verbose=1,
+        self.model.fit_generator(datagen.flow(self.x_train, self.y_train, batch_size=50),
+                                 steps_per_epoch=self.train_data_cnt,
+                                 validation_data=(self.x_test, self.y_test),
+                                 epochs=self.epoch, verbose=1,
                                  callbacks=[csv_logger])
         self.model.save(self.model_save_path)
 
@@ -92,5 +108,4 @@ class ImageClassification(object):
             pred = self.model.predict_proba(np_img)[0]
             class_type = np.argmax(pred)
         return_res = {'type': self.encoder.inverse_transform(class_type), 'prediction': str(pred)}
-	return return_res
-
+        return return_res

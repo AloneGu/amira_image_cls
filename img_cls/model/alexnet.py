@@ -58,7 +58,7 @@ class AlexNet(object):
                           metrics=['accuracy'])
             return model
         else:
-            model.add(Dense(self.num_class,activation='softmax'))
+            model.add(Dense(self.num_class, activation='softmax'))
             model.compile(loss='categorical_crossentropy',
                           optimizer='rmsprop',
                           metrics=['accuracy'])

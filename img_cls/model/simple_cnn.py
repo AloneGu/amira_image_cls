@@ -11,6 +11,7 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 
+
 class SimpleNet(object):
     def __init__(self, h, w, num_class):
         self.h = h
@@ -44,8 +45,8 @@ class SimpleNet(object):
                           metrics=['accuracy'])
             return model
         else:
-            model.add(Dense(self.num_class,activation='softmax'))
-            model.compile(loss='category_crossentropy',
+            model.add(Dense(self.num_class, activation='softmax'))
+            model.compile(loss='categorical_crossentropy',
                           optimizer='rmsprop',
                           metrics=['accuracy'])
             return model
