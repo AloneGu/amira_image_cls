@@ -28,9 +28,11 @@ def setcfg(name, default=''):
 
 setcfg('IMG_WIDTH', 224)
 setcfg('IMG_HEIGHT', 224)
-setcfg('MODEL', 'ALEXNET')
-setcfg('EPOCH', 20)
+setcfg('MODEL_NAME', 'SIMPLENET')
+setcfg('EPOCH', 30)
+setcfg('DATA_DIR','../data/dog_vs_cat')
+
+
 
 from .model.img_process_page import img_api
-
 app.register_blueprint(img_api, url_prefix='/image')

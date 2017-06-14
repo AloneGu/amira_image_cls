@@ -53,6 +53,7 @@ def data_load(data_dir_path, img_height, img_width):
         imgs = glob.glob(os.path.join(cls, '*'))
         tmp_y = os.path.split(cls)[-1]
         for img_path in imgs:
-            x.append(imresize(imread(img_path), (img_height, img_width)))
+            tmp_img = imresize(imread(img_path), (img_height, img_width))
+            x.append(np.transpose(tmp_img,(2,1,0)))
             y.append(tmp_y)
     return shuffle(np.array(x), y)

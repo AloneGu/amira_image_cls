@@ -12,7 +12,7 @@ from flask import Blueprint, request, abort
 import json
 import time
 import base64
-from .img_process import ImageClassification
+
 
 
 class ImgWorker(object):
@@ -38,6 +38,7 @@ def hello():
 
 @img_api.before_app_first_request
 def my_init():
+    from .img_process import ImageClassification
     ImgWorker.worker = ImageClassification()
 
 
