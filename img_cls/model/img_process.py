@@ -86,12 +86,11 @@ class ImageClassification(object):
         img = np.transpose(img, (2, 1, 0))
         np_img = np.array([img])
         if self.num_class == 2:
-            class_type = int(self.model.predict(np_img)[0])  # binary class 0 or 1
-            prob = round(self.model.predict_proba(np_img)[0], 2)
+            pred = self.model.predict(np_img)[0]
+            class_type = int(pred)  # binary class 0 or 1
         else:
-            res = self.model.predict_proba(np_img)[0]
-            class_type = np.argmax(res)
-            prob = round(max(res), 2)
-        return_res = {'type': self.encoder.inverse_transform(class_type), 'probability': prob}
-        return return_res
+            pred = self.model.predict_proba(np_img)[0]
+            class_type = np.argmax(pred)
+        return_res = {'type': self.encoder.inverse_transform(class_type), 'prediction': str(pred)}
+	return return_res
 
