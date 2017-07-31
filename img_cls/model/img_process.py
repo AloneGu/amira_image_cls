@@ -9,7 +9,7 @@
 
 from ..util import getcfg, data_load, get_abspath, get_y_labels
 from sklearn.preprocessing import LabelEncoder
-from keras.models import load_model
+from keras.models import load_model,Model
 from keras.callbacks import CSVLogger
 from keras.utils import to_categorical
 from keras.applications import vgg16, vgg19, inception_v3
