@@ -19,3 +19,8 @@ python run.py
 ## docker run
 
 use Dockerfile and set env, volume
+
+## models
+
+* copy densenet from https://raw.githubusercontent.com/titu1994/DenseNet/master/densenet.py
+* keras official model zoo

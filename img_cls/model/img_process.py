@@ -18,6 +18,34 @@ import numpy as np
 import os
 from keras.preprocessing.image import ImageDataGenerator
 
+def update_app_model(tmp_model, num_class):
+    from keras.layers import Dense, Flatten, GlobalAveragePooling2D, Dropout
+    # add a global spatial average pooling layer
+    x = tmp_model.output
+    try:
+        x = Flatten()(x)  # vgg ?
+    except:
+        pass  # inception
+
+    x = Dense(256, activation='relu', name='fc1')(x)
+    x = Dropout(0.3)(x)
+
+    if num_class == 2:
+        # prediction layer
+        x = Dense(1, activation='sigmoid', name='final_predictions')(x)
+        my_model = Model(inputs=tmp_model.input, outputs=x)
+        my_model.compile(loss='binary_crossentropy',
+                         optimizer='rmsprop',
+                         metrics=['accuracy'])
+    else:
+        # prediction layer
+        x = Dense(num_class, activation='softmax', name='final_predictions')(x)
+        my_model = Model(inputs=tmp_model.input, outputs=x)
+        my_model.compile(loss='categorical_crossentropy',
+                         optimizer='rmsprop',
+                         metrics=['accuracy'])
+
+    return my_model
 
 class ImageClassification(object):
     def __init__(self):
@@ -69,12 +97,21 @@ class ImageClassification(object):
             if self.model_name == 'SIMPLENET':
                 from .simple_cnn import SimpleNet
                 self.model = SimpleNet(self.img_h, self.img_w, self.num_class).get_model()
+                # remove top fully connection layers and do not use imagenet weights ( hard to download )
             elif self.model_name == 'VGG16':
-                self.model = vgg16.VGG16(input_shape=self.default_shape)
+                tmp_model = vgg16.VGG16(input_shape=self.default_shape, include_top=True, weights='imagenet')
+                self.model = update_app_model(tmp_model, self.num_class)
             elif self.model_name == 'VGG19':
-                self.model = vgg19.VGG19(input_shape=self.default_shape)
+                tmp_model = vgg19.VGG19(input_shape=self.default_shape, include_top=True, weights='imagenet')
+                self.model = update_app_model(tmp_model, self.num_class)
             elif self.model_name == 'INCEPTIONV3':
-                self.model = inception_v3.InceptionV3(input_shape=self.default_shape)
+                tmp_model = inception_v3.InceptionV3(input_shape=self.default_shape, include_top=True,
+                                                     weights='imagenet')
+                self.model = update_app_model(tmp_model, self.num_class)
+            elif self.model_name == 'DENSENET':
+                from .densenet import DenseNet
+                tmp_model = DenseNet((32, 32, 3), depth=40, growth_rate=12, nb_filter=16)
+                self.model = update_app_model(tmp_model, self.num_class)
             if self.model is not None:
                 self.model.summary()
                 self.train()
