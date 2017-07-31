@@ -2,7 +2,7 @@
 
 image tag web from data dir
 
-this project use python3, keras and theano
+this project use python3, keras and theano (not support tensorflow)
 
 ## data
 

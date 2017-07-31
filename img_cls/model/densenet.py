@@ -27,7 +27,7 @@ import keras.backend as K
 
 def DenseNet(input_shape=None, depth=40, nb_dense_block=3, growth_rate=12, nb_filter=16, nb_layers_per_block=-1,
              bottleneck=False, reduction=0.0, dropout_rate=0.0, weight_decay=1E-4,
-             include_top=True, input_tensor=None,
+             include_top=False, input_tensor=None,
              classes=10, activation='softmax'):
     '''Instantiate the DenseNet architecture,
         optionally loading weights pre-trained
@@ -106,12 +106,10 @@ def DenseNet(input_shape=None, depth=40, nb_dense_block=3, growth_rate=12, nb_fi
     # Create model.
     model = Model(inputs, x, name='densenet')
 
-
     if K.backend() == 'theano':
         convert_all_kernels_in_model(model)
 
     return model
-
 
 
 def __conv_block(ip, nb_filter, bottleneck=False, dropout_rate=None, weight_decay=1E-4):
@@ -311,9 +309,7 @@ def __create_dense_net(nb_classes, img_input, include_top, depth=40, nb_dense_bl
     x = GlobalAveragePooling2D()(x)
 
     if include_top:
-        x = Dense(nb_classes, activation=activation, kernel_regularizer=l2(weight_decay), bias_regularizer=l2(weight_decay))(x)
+        x = Dense(nb_classes, activation=activation, kernel_regularizer=l2(weight_decay),
+                  bias_regularizer=l2(weight_decay))(x)
 
     return x
-
-
-

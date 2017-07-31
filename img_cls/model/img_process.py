@@ -18,6 +18,7 @@ import numpy as np
 import os
 from keras.preprocessing.image import ImageDataGenerator
 
+
 def update_app_model(tmp_model, num_class):
     from keras.layers import Dense, Flatten, GlobalAveragePooling2D, Dropout
     # add a global spatial average pooling layer
@@ -46,6 +47,7 @@ def update_app_model(tmp_model, num_class):
                          metrics=['accuracy'])
 
     return my_model
+
 
 class ImageClassification(object):
     def __init__(self):
@@ -110,7 +112,7 @@ class ImageClassification(object):
                 self.model = update_app_model(tmp_model, self.num_class)
             elif self.model_name == 'DENSENET':
                 from .densenet import DenseNet
-                tmp_model = DenseNet((32, 32, 3), depth=40, growth_rate=12, nb_filter=16)
+                tmp_model = DenseNet((3, self.img_h, self.img_w), depth=40, growth_rate=12, nb_filter=16)
                 self.model = update_app_model(tmp_model, self.num_class)
             if self.model is not None:
                 self.model.summary()
