@@ -112,7 +112,7 @@ class ImageClassification(object):
                 self.model = update_app_model(tmp_model, self.num_class)
             elif self.model_name == 'DENSENET':
                 from .densenet import DenseNet
-                tmp_model = DenseNet((3, self.img_h, self.img_w), depth=40, growth_rate=12, nb_filter=16)
+                tmp_model = DenseNet((3, self.img_h, self.img_w), depth=10, growth_rate=3, nb_filter=4) # change to small size
                 self.model = update_app_model(tmp_model, self.num_class)
             if self.model is not None:
                 self.model.summary()
