@@ -57,7 +57,7 @@ def data_load(data_dir_path, img_height, img_width):
             tmp_img = imresize(imread(img_path), (img_height, img_width))
             x.append(np.transpose(tmp_img, (2, 1, 0)))
             y.append(tmp_y)
-    return shuffle(np.array(x), y)
+    return shuffle(np.array(x), y, random_state=42)
 
 
 def get_y_labels(data_dir_path):

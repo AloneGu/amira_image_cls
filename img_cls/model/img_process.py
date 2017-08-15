@@ -86,7 +86,7 @@ class ImageClassification(object):
 
             # already shuffle ,split
             tmp_data_cnt = len(self.x)
-            self.train_data_cnt = int(tmp_data_cnt * 0.7)
+            self.train_data_cnt = int(tmp_data_cnt * 0.65)
             self.x_train = self.x[:self.train_data_cnt]
             self.x_test = self.x[self.train_data_cnt:]
             self.y_train = self.binary_y[:self.train_data_cnt]

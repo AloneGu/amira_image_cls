@@ -20,22 +20,27 @@ class SimpleNet(object):
 
     def get_model(self):
         model = Sequential()
-        model.add(Conv2D(32, kernel_size=3, input_shape=(3, self.h, self.w)))
+        model.add(Conv2D(32, kernel_size=3, input_shape=(3, self.h, self.w),strides=2))
         model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-
-        model.add(Conv2D(32, kernel_size=3))
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
 
         model.add(Conv2D(64, kernel_size=3))
         model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Dropout(0.3))
+        model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
+
+        model.add(Conv2D(128, kernel_size=3))
+        model.add(Activation('relu'))
+        model.add(MaxPooling2D(pool_size=(2, 2), strides=2))
 
         model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
         model.add(Dense(64))
         model.add(Activation('relu'))
-        model.add(Dropout(0.5))
+        model.add(Dropout(0.3))
+
+        model.add(Dense(16))
+        model.add(Activation('relu'))
+        model.add(Dropout(0.3))
 
         if self.num_class == 2:
             model.add(Dense(1))
