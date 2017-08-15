@@ -131,8 +131,8 @@ class ImageClassification(object):
         # self.model.fit(self.x, self.binary_y, epochs=self.epoch, validation_split=0.2)
         log_path = get_abspath('../models/{}_{}_training.log'.format(self.model_name, self.epoch))
         csv_logger = CSVLogger(log_path)
-        bat_size = 64
-        steps = int(self.train_data_cnt / bat_size) + 30
+        bat_size = 50
+        steps = int(self.train_data_cnt / bat_size) + 20
         self.model.fit_generator(datagen.flow(self.x_train, self.y_train, batch_size=bat_size),
                                  steps_per_epoch=steps,
                                  validation_data=(self.x_test, self.y_test),
