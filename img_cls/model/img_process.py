@@ -123,16 +123,16 @@ class ImageClassification(object):
         # use data augmentation
         datagen = ImageDataGenerator(
             rescale=1. / 255,
-            shear_range=0.1,
-            rotation_range=0.1,
-            zoom_range=0.1,
+            shear_range=0.15,
+            rotation_range=0.15,
+            zoom_range=0.15,
             vertical_flip=True,
             horizontal_flip=True)  # randomly flip images
         # self.model.fit(self.x, self.binary_y, epochs=self.epoch, validation_split=0.2)
         log_path = get_abspath('../models/{}_{}_training.log'.format(self.model_name, self.epoch))
         csv_logger = CSVLogger(log_path)
-        bat_size = 32
-        steps = int(self.train_data_cnt / bat_size) + 20
+        bat_size = 64
+        steps = int(self.train_data_cnt / bat_size) + 30
         self.model.fit_generator(datagen.flow(self.x_train, self.y_train, batch_size=bat_size),
                                  steps_per_epoch=steps,
                                  validation_data=(self.x_test, self.y_test),
