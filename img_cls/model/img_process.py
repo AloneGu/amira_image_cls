@@ -9,7 +9,7 @@
 
 from ..util import getcfg, data_load, get_abspath, get_y_labels
 from sklearn.preprocessing import LabelEncoder
-from keras.models import load_model,Model
+from keras.models import load_model, Model
 from keras.callbacks import CSVLogger
 from keras.utils import to_categorical
 from keras.applications import vgg16, vgg19, inception_v3
@@ -112,7 +112,8 @@ class ImageClassification(object):
                 self.model = update_app_model(tmp_model, self.num_class)
             elif self.model_name == 'DENSENET':
                 from .densenet import DenseNet
-                tmp_model = DenseNet((3, self.img_h, self.img_w), depth=10, growth_rate=3, nb_filter=4) # change to small size
+                tmp_model = DenseNet((3, self.img_h, self.img_w), depth=10, growth_rate=3,
+                                     nb_filter=4)  # change to small size
                 self.model = update_app_model(tmp_model, self.num_class)
             if self.model is not None:
                 self.model.summary()
@@ -122,14 +123,16 @@ class ImageClassification(object):
         # use data augmentation
         datagen = ImageDataGenerator(
             rescale=1. / 255,
-            shear_range=0.2,
-            zoom_range=0.2,
+            shear_range=0.1,
+            rotation_range=0.1,
+            zoom_range=0.1,
+            vertical_flip=True,
             horizontal_flip=True)  # randomly flip images
         # self.model.fit(self.x, self.binary_y, epochs=self.epoch, validation_split=0.2)
         log_path = get_abspath('../models/{}_{}_training.log'.format(self.model_name, self.epoch))
         csv_logger = CSVLogger(log_path)
         bat_size = 32
-        steps = int(self.train_data_cnt/bat_size) + 10
+        steps = int(self.train_data_cnt / bat_size) + 20
         self.model.fit_generator(datagen.flow(self.x_train, self.y_train, batch_size=bat_size),
                                  steps_per_epoch=steps,
                                  validation_data=(self.x_test, self.y_test),
