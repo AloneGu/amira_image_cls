@@ -40,6 +40,11 @@ def getenv(name, default=''):
 def get_abspath(filename):
     return os.path.normpath(os.path.join(__file__, os.path.pardir, filename))
 
+def preprocess_img(img):
+    img = img  * 2
+    img = img - 255
+    img = img / 255
+    return img
 
 def data_load(data_dir_path, img_height, img_width):
     """
@@ -57,7 +62,9 @@ def data_load(data_dir_path, img_height, img_width):
             tmp_img = imresize(imread(img_path), (img_height, img_width))
             x.append(np.transpose(tmp_img, (2, 1, 0)))
             y.append(tmp_y)
-    return shuffle(np.array(x), y, random_state=42)
+    x = np.array(x)
+    x = preprocess_img(x)
+    return shuffle(x, y, random_state=42)
 
 
 def get_y_labels(data_dir_path):

@@ -7,7 +7,7 @@
 @time: 2017-06-13 11:13
 """
 
-from ..util import getcfg, data_load, get_abspath, get_y_labels
+from ..util import getcfg, data_load, get_abspath, get_y_labels, preprocess_img
 from sklearn.preprocessing import LabelEncoder
 from keras.models import load_model, Model
 from keras.callbacks import CSVLogger
@@ -122,7 +122,6 @@ class ImageClassification(object):
     def train(self):
         # use data augmentation
         datagen = ImageDataGenerator(
-            rescale=1. / 255,
             shear_range=0.15,
             rotation_range=0.15,
             zoom_range=0.15,
@@ -144,6 +143,7 @@ class ImageClassification(object):
         img = imread(img_file_path)
         img = imresize(img, (self.img_h, self.img_w))
         img = np.transpose(img, (2, 1, 0))
+        img = preprocess_img(img)
         np_img = np.array([img])
         if self.num_class == 2:
             pred = self.model.predict(np_img)[0]
